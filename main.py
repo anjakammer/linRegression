@@ -82,9 +82,9 @@ def compute_new_theata(x, y, theta_0, theta_1, alpha):
 
 
 
-theta_0 = 4.                # Startwerte -> Selbst festgelegt
-theta_1 = 4.
-alpha = 0.01                # Schrittrate/Schrittweite
+theta_0 = 3.                # Startwerte -> Selbst festgelegt
+theta_1 = 9.
+alpha = 0.015                # Schrittrate/Schrittweite
 
 for i in range(2000):
     theta_0, theta_1 = compute_new_theata(x, y, theta_0, theta_1, alpha)
@@ -97,6 +97,12 @@ h_ = theta_0 + theta_1 * x_
 plt.plot(x_, h_, 'r-')      # Die optimalste Gerade nach 2000 Iterationen
 plt.show()
 
+costs = {}
+for i in range(2000):
+    theta_0, theta_1 = compute_new_theata(x, y, theta_0, theta_1, alpha)
+    costs[i] = (float(cost(theta_0, theta_1)))
+plt.plot(costs.keys(), costs.values(), 'r-')
+plt.show()
 
 # als Hausaufgabe ein Graph X-Achse = Iterationen, Y-Achse = Kosten
 # gehen kosten hoch/runter im Wechsel, ist alpha zu gross
