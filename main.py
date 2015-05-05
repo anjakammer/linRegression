@@ -84,7 +84,7 @@ def compute_new_theata(x, y, theta_0, theta_1, alpha):
 
 theta_0 = 1.                # Startwerte -> Selbst festgelegt
 theta_1 = 2.
-alpha = 0.005                # Schrittrate/Schrittweite
+alpha = 0.01                # Schrittrate/Schrittweite
 costs = {}
 
 for i in range(20000):

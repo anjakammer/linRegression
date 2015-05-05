@@ -9,8 +9,10 @@ print(x)
 
 # 2
 
-def linear_hypothesis(theta_0, theta_1):
-    return lambda x:theta_0 + theta_1 * x #Ebenengleichung
+#def linear_hypothesis(theta_0, theta_1):
+#    return lambda x:theta_0 + theta_1 * x #Ebenengleichung
+def linear_hypothesis(thetas):
+	return lambda xList: np.sum([ theta * x for theta, x in zip(thetas, xList) ])
 
 h = linear_hypothesis(theta_0=1, theta_1=2)
 print(h(1)) # => 3 bester Y-Wert fuer einen x-Wert
