@@ -9,31 +9,30 @@ m = 100
 features_count = 2
 features_with_X0 = features_count + 1
 # np.concatenate
-xLists = np.array([np.random.uniform(x_min, x_max, features_with_X0) for x in range(m)])
-xLists[:, 0] = 1.0  # first column to 1.0
+xLists = np.array([np.random.uniform(x_min, x_max, features_with_X0) for x in range(m)]) # 3x 100 mit random ziffern
+xLists[:, 0] = 1.0  # erste spalte durch 1.0 ersetzen
 
 
 
 # 2
-thetas = np.array([1.1, 2.0, -.9])
+# Theatas => Ebenengleichung
+thetas = np.array([1.1, 2.0, -.9]) # diese originalen Thetas sollen am Ende wieder gefunden werden => Trainingsdaten
 
 
 def linear_hypothesis(thetas):
     return lambda xLists: xLists.dot(np.transpose(thetas))
 
-
 h = linear_hypothesis(thetas)
-print(h(xLists))
 
 
 # 3 a
 #y = h(xLists) + 2. * np.random.randn(m)
-y = h(xLists)
+y = h(xLists)       # Vector mit 100 werten
 print("Y-values: \n" + str(y))
+#print("geshaptes y : %s" % y.shape)
 
-y_noise_simga = y * 0.1
-y_new = y + np.random.randn(m) * y_noise_simga
-print(y_new)
+
+y_new = y + np.random.randn(m) * 2          # *2 um Rauschen zu verstaerken
 print("Y-values with gauss rauschen: \n" + str(y_new))
 
 #3 b
@@ -46,13 +45,16 @@ print("x2-values: \n" + str(x2))
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')  # 1x1 grid, 1 subplot
 ax.scatter(x1, x2, y_new)
+ax.set_xlabel("feature x1")
+ax.set_ylabel("feature x2")
+ax.set_zlabel("Y-Values")
 plt.show()
 
 #4 cost function
 def cost_function(x, y):
     assert (len(x) == len(y))
     m = len(x)
-    return lambda thetas: 1. / ((2. * float(m)) * (linear_hypothesis(thetas)(x) - y) ** 2).sum()
+    return lambda thetas: (1. / (2. * float(m)) * (linear_hypothesis(thetas)(x) - y) ** 2).sum()
 
 
 j = cost_function(xLists, y_new)
@@ -68,28 +70,40 @@ def compute_new_theta(x, y, thetas, alpha):
 # 5b
 def gradient_decent(alpha, theta, nb_iterations, x, y):
     cost_f = cost_function(x, y)
-    costs = np.zeros(nb_iterations)
+    costs = np.zeros(nb_iterations) # vector von nullen
     for i in range(nb_iterations):
-        new_thetas = compute_new_theta(x, y, theta, alpha)
-        costs[i] = cost_f(new_thetas)
-    return new_thetas, costs
+        theta = compute_new_theta(x, y, theta, alpha)
+        costs[i] = cost_f(theta)
+        #print(cost_f(theta))
+    return theta, costs
 
-alpha = 0.01
-iter = 1000     # iterationen
-new_thetas, costs = gradient_decent(alpha, thetas, iter, xLists, y_new)
-print new_thetas # neue Thetas
+alpha = 0.001
+iter = 1000     # iterationen => stop condition
+start_thetas = np.array([1.5, 1.0, 0.0])
+new_thetas, costs = gradient_decent(alpha, start_thetas, iter, xLists, y_new)
+print("gelernte thetas: \n" + str(new_thetas)) # neue Thetas
+print("originale thetas: \n" + str(thetas)) # originale Thetas
 
 # 5c
-fig = plt.figure()
-ax = fig.add_subplot(111)
 plt.plot(np.array(range(iter)), costs)
 plt.show()
 
 # 6
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.plot(xLists[:, 1], xLists[:, 2], linear_hypothesis(new_thetas)(xLists))
+#ax.plot(xLists[:, 1], xLists[:, 2], linear_hypothesis(new_thetas)(xLists))
+
+# Code von Simon zur Darstellung der Hyperebene
+plainFunc = lambda x, y: new_thetas[0] + new_thetas[1] *x + new_thetas[2]*y # bauen der Ebenengleichung
+# create meshgrid to plot a surface
+plainX, plainY = np.meshgrid(np.linspace(-10., 10.), np.linspace(-10., 10.))    # range in der die Ebene sich ausbreitet
+ax.plot_surface(plainX, plainY, plainFunc(plainX, plainY))  # Ebene plotten
+ax.scatter(x1, x2, y_new)
+
 ax.scatter(xLists[:, 1], xLists[:, 2], y_new)
+ax.set_xlabel("feature x1")
+ax.set_ylabel("feature x2")
+ax.set_zlabel("Y-Values")
 plt.show()
 
 
